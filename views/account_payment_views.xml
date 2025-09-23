@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit account.payment form view to add smart button -->
+    <record id="view_account_payment_form_inherit" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <!-- Add smart button at the top right corner -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_reconcile_widget"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-exchange"
+                    attrs="{'invisible': [('state', '!=', 'posted')]}"
+                >
+                    <field name="reconcile_move_line_count" widget="statinfo" string="Reconcile"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Fallback: Create button box if it doesn't exist -->
+    <record id="view_account_payment_form_button_box_fallback" model="ir.ui.view">
+        <field name="name">account.payment.form.button.box.fallback</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <!-- Only add button box if it doesn't exist -->
+            <xpath expr="//sheet" position="inside">
+                <div name="button_box" class="oe_button_box" attrs="{'invisible': [('id', '=', False)]}">
+                    <button
+                        name="action_open_reconcile_widget"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-exchange"
+                        attrs="{'invisible': [('state', '!=', 'posted')]}">
+                        <field name="reconcile_move_line_count" widget="statinfo" string="Reconcile"/>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

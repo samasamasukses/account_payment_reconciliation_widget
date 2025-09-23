@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Payment Reconcile Widget Form View - CONTAINER DETECTION FIXED -->
+    <record id="payment_reconcile_widget_view_form" model="ir.ui.view">
+        <field name="name">payment.reconcile.widget.form</field>
+        <field name="model">payment.reconcile.widget</field>
+        <field name="arch" type="xml">
+            <form string="Payment Reconciliation" class="o_payment_reconcile_form">
+                <header>
+                    <button name="action_refresh_data" string="Refresh" type="object" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <!-- ENSURE CONTAINER EXISTS IMMEDIATELY -->
+                    <div class="payment_reconcile_widget_container">
+
+                        <!-- Header with payment information -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-info">
+                                    <h4>
+                                        <i class="fa fa-exchange"></i>
+                                        Reconcile Payment: <field name="payment_id" options="{'no_create': True, 'no_edit': True}" readonly="1"/>
+                                    </h4>
+                                    <p class="mb-0">
+                                        Partner: <field name="partner_id" readonly="1" options="{'no_create': True, 'no_edit': True}"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Debug section (will be shown by JavaScript) -->
+                        <div id="debug_info" class="row" style="display:none;">
+                            <div class="col-12">
+                                <div class="alert alert-warning">
+                                    <strong>Debug Info:</strong>
+                                    <div id="debug_content"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MAIN WIDGET CONTAINER - FIXED: Ensure this div is always present -->
+                        <div class="payment_reconcile_widget" id="payment_reconcile_main_container">
+
+                            <!-- Initialize marker for JavaScript -->
+                            <script type="text/javascript">
+                                // Immediately mark that container exists
+                                console.log('Widget container created in DOM');
+                                if (typeof window.paymentWidgetContainerReady === 'undefined') {
+                                    window.paymentWidgetContainerReady = true;
+
+                                    // Dispatch custom event for any waiting JavaScript
+                                    document.dispatchEvent(new CustomEvent('paymentWidgetContainerReady', {
+                                        detail: { containerId: 'payment_reconcile_main_container' }
+                                    }));
+                                }
+                            </script>
+
+                            <div class="row">
+                                <!-- Left side: Payment Move Lines -->
+                                <div class="col-md-6">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="mb-0">
+                                                <i class="fa fa-money"></i> Payment Move Lines
+                                            </h5>
+                                        </div>
+                                        <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                                            <div id="payment_lines_container">
+                                                <div class="p-3 text-center text-muted">
+                                                    <i class="fa fa-spinner fa-spin"></i> Loading payment lines...
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right side: Reconcilable Move Lines -->
+                                <div class="col-md-6">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">
+                                                <i class="fa fa-list"></i> Available Move Lines
+                                            </h5>
+                                            <button type="button" class="btn btn-sm btn-outline-light" id="btn_select_all" name="btn_select_all">
+                                                Select All
+                                            </button>
+                                        </div>
+                                        <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                                            <div id="reconcilable_lines_container">
+                                                <div class="p-3 text-center text-muted">
+                                                    <i class="fa fa-spinner fa-spin"></i> Loading reconcilable lines...
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Summary and actions -->
+                            <div class="row mt-4">
+                                <div class="col-md-12">
+                                    <div class="card border-secondary">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <i class="fa fa-calculator"></i> Reconciliation Summary
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <div class="reconcile_summary_stats">
+                                                        <div class="row text-center">
+                                                            <div class="col-4">
+                                                                <div class="stat-item">
+                                                                    <h6 class="text-muted">Total Debit</h6>
+                                                                    <span id="selected_debit" class="h5 text-success">0.00</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <div class="stat-item">
+                                                                    <h6 class="text-muted">Total Credit</h6>
+                                                                    <span id="selected_credit" class="h5 text-info">0.00</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <div class="stat-item">
+                                                                    <h6 class="text-muted">Difference</h6>
+                                                                    <span id="balance_difference" class="h5">0.00</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="reconcile_actions text-right">
+                                                        <button type="button" class="btn btn-success btn-lg" id="btn_reconcile" name="btn_reconcile">
+                                                            <i class="fa fa-check"></i> Reconcile
+                                                        </button>
+                                                        <br/>
+                                                        <button type="button" class="btn btn-secondary mt-2" id="btn_refresh" name="btn_refresh">
+                                                            <i class="fa fa-refresh"></i> Refresh
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-secondary mt-2" onclick="window.history.back()" name="btn_back">
+                                                            <i class="fa fa-arrow-left"></i> Back
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Help text -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-light">
+                                        <small>
+                                            <i class="fa fa-info-circle"></i>
+                                            <strong>How to use:</strong> Select move lines from the right panel to reconcile with the payment.
+                                            The reconciliation must be balanced (difference = 0) before you can proceed.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields that contain the actual data we need -->
+                    <group invisible="1">
+                        <field name="payment_id" force_save="1"/>
+                        <field name="reconcile_data"/>
+                        <field name="payment_move_line_ids"/>
+                        <field name="move_line_ids"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Payment Reconcile Widget -->
+    <record id="action_payment_reconcile_widget" model="ir.actions.act_window">
+        <field name="name">Payment Reconciliation</field>
+        <field name="res_model">payment.reconcile.widget</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="payment_reconcile_widget_view_form"/>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

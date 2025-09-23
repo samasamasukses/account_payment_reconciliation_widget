@@ -1,0 +1,211 @@
+/* ============================================================================
+ * PAYMENT RECONCILE WIDGET STYLES
+ * ============================================================================
+ * static/src/css/payment_reconcile_widget.css
+ */
+
+/* Main container styles */
+.payment_reconcile_widget_container {
+    padding: 20px;
+    min-height: 600px;
+}
+
+.payment_reconcile_widget .card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.payment_reconcile_widget .card-header {
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 8px 8px 0 0;
+}
+
+.payment_reconcile_widget .card-body {
+    padding: 0;
+}
+
+.reconcile_line {
+    margin-bottom: 0;
+    border-radius: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.reconcile_line:hover {
+    background-color: #f8f9fa !important;
+}
+
+.reconcile_line.selected {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid #2196f3 !important;
+}
+
+.reconcile_line.selected .line_name {
+    font-weight: 600 !important;
+}
+
+.line_checkbox {
+    margin-right: 12px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.line_indicator {
+    font-size: 16px;
+    margin-right: 12px;
+    color: #2196f3;
+}
+
+.reconcile_amounts .badge {
+    font-size: 11px;
+    margin: 0 3px;
+    padding: 4px 8px;
+}
+
+.balance {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.reconcile_summary_stats {
+    padding: 15px 0;
+}
+
+.stat-item {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin: 0 5px;
+    border: 1px solid #e9ecef;
+}
+
+.stat-item h6 {
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.reconcile_actions {
+    padding: 15px 0;
+}
+
+.reconcile_actions .btn {
+    margin: 0 5px;
+    min-width: 120px;
+    font-weight: 500;
+}
+
+.reconcile_actions .btn i {
+    margin-right: 6px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-info {
+    color: #17a2b8 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hover-bg:hover {
+    background-color: #f8f9fa !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reconcile_line {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.alert {
+    border-radius: 6px;
+    border: 1px solid;
+}
+
+.position-fixed {
+    position: fixed !important;
+}
+
+.alert-dismissible .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.75rem 1.25rem;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.alert-dismissible .close:hover {
+    opacity: 0.75;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .payment_reconcile_widget_container {
+        padding: 10px;
+    }
+
+    .reconcile_line .d-flex {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .reconcile_line .text-right {
+        margin-top: 10px;
+        text-align: left !important;
+        width: 100%;
+    }
+
+    .reconcile_actions .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .stat-item {
+        margin-bottom: 10px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
